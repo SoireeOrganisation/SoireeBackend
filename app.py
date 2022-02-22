@@ -1,7 +1,10 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, flash, render_template, redirect, url_for
+from flask_login import LoginManager, login_user, \
+    current_user, logout_user, login_required
 
 from db import db, Review, Category, User, Role, Company, Bonus, update_session
 from config import Config
+from login_form import LoginForm
 
 from apiflask import APIFlask
 
@@ -36,6 +39,39 @@ except Exception as e:
     print("error was occurred")
 
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(login=form.username.data).first()
+        if user is None:
+            flash('User not found', category='danger')
+            return redirect(url_for('login'))
+        elif user.check_password(form.password.data) is False:
+            flash('Invalid Username or password', category='danger')
+            return redirect(url_for('login'))
+        else:
+            login_user(user)
+            flash('Logged in successfully', category='success')
+            return redirect(url_for('index'))
+    for errors in form.errors.values():
+        for error in errors:
+            flash(error, category='danger')
+    return render_template('login.html', form=form, title='Authorization')
+
+
 def is_valid_key(key):
     return User.query.filter_by(key=key).first() is not None
 
@@ -64,6 +100,18 @@ def api_staff():
     return make_response(jsonify(staff), 200)
 
 
+@app.route("/index", methods=["GET"])
+def index():
+    return "Покупайте доллары, товарищи!"
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
 @app.route("/api/reviews", methods=["GET", "POST"])
 def api_reviews():
     if request.method == "GET":
@@ -72,7 +120,7 @@ def api_reviews():
             return make_response(jsonify('"key" field missing'), 400)
         if not is_valid_key(key):
             return make_response(jsonify('"key" is not valid'), 400)
-        return jsonify([review.to_public_dict() for review in Review.query.filter_by(subject_id=User.query.filter_by(key=key).first().id).all()], 200)
+        return make_response(jsonify([review.to_public_dict() for review in Review.query.filter_by(subject_id=User.query.filter_by(key=key).first().id).all()]), 200)
     elif request.method == "POST":
         data = request.json
         key = data.get("key")

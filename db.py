@@ -1,6 +1,7 @@
 import hashlib
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
 db = SQLAlchemy()
@@ -12,7 +13,7 @@ user_bonus = db.Table('bonuses',
 )
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False, unique=False)
@@ -46,7 +47,7 @@ class Company(db.Model):
     reviews = db.relationship('Review', backref='company', lazy=True)
 
     def to_public_dict(self):
-        return {'name': self.name}
+        return {'id': self.id, 'name': self.name}
 
 
 class Role(db.Model):
@@ -66,8 +67,8 @@ class Review(db.Model):
     score = db.Column(db.Integer, nullable=False)
 
     def to_public_dict(self):
-        return {"id": self.id, "category_id": self.category_id,
-                "company_id": self.company_id,
+        return {"id": self.id, "category": self.category.to_public_dict(),
+                "company": self.company.to_public_dict(),
                 "reviewer": self.reviewer.to_public_dict(),
                 "subject": self.subject.to_public_dict(),
                 "note": self.note,
