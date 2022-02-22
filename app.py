@@ -69,9 +69,9 @@ def api_reviews():
     if request.method == "GET":
         key = request.args.get("key")
         if key is None:
-            raise NotImplementedError()
+            return make_response(jsonify('"key" field missing'), 400)
         if not is_valid_key(key):
-            raise NotImplementedError()
+            return make_response(jsonify('"key" is not valid'), 400)
         return jsonify([review.to_public_dict() for review in Review.query.filter_by(subject_id=User.query.filter_by(key=key).first().id).all()], 200)
     elif request.method == "POST":
         data = request.json
@@ -79,16 +79,16 @@ def api_reviews():
         subject_id = data.get("subject_id")
         reviews = data.get("reviews")
         if not all([o is not None for o in [key, subject_id, reviews]]):
-            raise NotImplementedError()
+            return make_response(jsonify('There is empty fields'), 400)
         if not is_valid_key(key):
-            raise NotImplementedError()
+            return make_response(jsonify('"key" is not valid'), 400)
         db_reviews = []
         for item in reviews:
             category_id = item.get("category_id")
             note = item.get("note")
             score = item.get("score")
             if not all([o is not None for o in [category_id, note, score]]):
-                raise NotImplementedError()
+                return make_response(jsonify('There is empty fields'), 400)
             reviewer = User.query.filter_by(key=key).first()
             subject = User.query.filter_by(id=subject_id).first()
             category = Category.query.filter_by(id=category_id).first()
