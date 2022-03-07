@@ -1,6 +1,7 @@
 import hashlib
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.ext.hybrid import hybrid_property
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -28,6 +29,14 @@ class User(UserMixin, db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
     bonuses = db.relationship('Bonus', secondary=user_bonus, lazy='subquery', backref=db.backref('users', lazy=True))
 
+    @hybrid_property
+    def password(self):
+        return self.password_hash
+
+    @password.setter
+    def password(self, new_password):
+        self.set_password(new_password)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
         self.key = hashlib.md5((password + self.login).encode("utf-8")).hexdigest()
@@ -39,6 +48,12 @@ class User(UserMixin, db.Model):
         return {"id": self.id, "name": self.name, "surname": self.surname,
                 "patronymic": self.patronymic, "company": self.company.to_public_dict()}
 
+    def __repr__(self):
+        return "{} | {} {} {}".format(self.login,
+                                      self.name,
+                                      self.surname,
+                                      self.patronymic)
+
 
 class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -49,11 +64,17 @@ class Company(db.Model):
     def to_public_dict(self):
         return {'id': self.id, 'name': self.name}
 
+    def __repr__(self):
+        return "{}".format(self.name)
+
 
 class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False, unique=True)
     users = db.relationship('User', backref='role', lazy=True)
+
+    def __repr__(self):
+        return "{}".format(self.name)
 
 
 class Review(db.Model):
@@ -83,6 +104,9 @@ class Category(db.Model):
     def to_public_dict(self):
         return {"id": self.id, "name": self.name}
 
+    def __repr__(self):
+        return "{}".format(self.name)
+
 
 class Bonus(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -90,6 +114,9 @@ class Bonus(db.Model):
 
     def to_public_dict(self):
         return {"id": self.id, "name": self.name}
+
+    def __repr__(self):
+        return "{}".format(self.name)
 
 
 def update_session(*args):
