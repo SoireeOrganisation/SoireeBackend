@@ -2,7 +2,10 @@ from flask import Flask, request, jsonify, make_response, flash, \
     render_template, redirect, url_for, session
 from flask_login import LoginManager, login_user, \
     current_user, logout_user, login_required
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from sqlalchemy.sql.functions import func
+from wtforms import PasswordField
 
 from db import db, Review, Category, User, Role, Company, Bonus, update_session
 from config import Config
@@ -30,6 +33,9 @@ try:
     u1.set_password("123")
     u2 = User(name='B', surname='B1', login='bb')
     u2.set_password("123")
+    u3 = User(name='admin', surname='', login='admin')
+    u3.set_password('admin')
+    u3.role = r
     u1.company = c
     u2.company = c
     bonus = Bonus(name='Электрокочерга')
@@ -59,7 +65,7 @@ try:
     rev2.subject = u1
     rev2.company = c
     rev2.category = cat3
-    update_session(r, c, cat, u1, u2, rev, rev2, bonus, cat, cat2, cat3, cat4)
+    update_session(r, r1, r2, c, cat, u1, u2, u3, rev, rev2, bonus, cat, cat2, cat3, cat4)
 except Exception as e:
     print(e)
     print("error was occurred")
@@ -67,6 +73,34 @@ except Exception as e:
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+class AdminModelView(ModelView):
+    column_exclude_list = ['password_hash', 'key']
+    form_extra_fields = {
+        'password': PasswordField('Password')
+    }
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.role_id == 1
+
+
+class CompanyModelView(ModelView):
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.role_id == 1
+
+
+class CategoryModelView(ModelView):
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.role_id == 1
+
+
+admin = Admin(app)
+admin.add_view(AdminModelView(User, db.session))
+admin.add_view(CompanyModelView(Company, db.session))
+admin.add_view(CategoryModelView(Category, db.session))
 
 
 @login_manager.user_loader
@@ -90,7 +124,8 @@ def login():
         else:
             login_user(user)
             flash('Logged in successfully', category='success')
-            response = make_response(redirect(url_for('index')))
+            route = '/admin' if user.role_id == 1 else '/index'
+            response = make_response(redirect(route))
             response.set_cookie("key", user.key)
             return response
     for errors in form.errors.values():
@@ -128,8 +163,18 @@ def api_staff():
     return make_response(jsonify(staff), 200)
 
 
+@app.route("/forbidden")
+def forbidden():
+    return render_template("forbidden.html")
+
+
+@app.route("/", methods=["GET"])
 @app.route("/index", methods=["GET"])
 def index():
+    if not current_user.is_authenticated:
+        return redirect('login')
+    if current_user.role_id != 2:
+        return redirect("/forbidden")
     total_reviews_count = db.session.query(
         func.count(Review.id).label('number')).filter(
         (Review.company_id == current_user.company_id)).first().number
@@ -159,7 +204,7 @@ def index():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 @app.route("/api/reviews", methods=["GET", "POST"])
