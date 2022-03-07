@@ -22,7 +22,7 @@ class User(UserMixin, db.Model):
     login = db.Column(db.String(50), index=True, nullable=False, unique=True)
     password_hash = db.Column(db.String(128))
     key = db.Column(db.String(256), index=True)
-    roleId = db.Column(db.Integer, db.ForeignKey('role.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     reviewed = db.relationship('Review', backref=db.backref('reviewer', lazy=True), foreign_keys='Review.reviewer_id')
     subjected = db.relationship('Review', backref=db.backref('subject', lazy=True), foreign_keys='Review.subject_id')
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))

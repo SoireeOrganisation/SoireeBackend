@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, make_response, flash, render_template, redirect, url_for
+from flask import Flask, request, jsonify, make_response, flash, \
+    render_template, redirect, url_for, session
 from flask_login import LoginManager, login_user, \
     current_user, logout_user, login_required
+from sqlalchemy.sql.functions import func
 
 from db import db, Review, Category, User, Role, Company, Bonus, update_session
 from config import Config
@@ -16,9 +18,14 @@ db.app = app
 db.init_app(app)
 try:
     db.create_all()
-    r = Role(name='Тест')
+    r = Role(name='Администатор')
+    r1 = Role(name='Руководитель')
+    r2 = Role(name='Сотрудник')
     c = Company(name='Рога и копыта')
     cat = Category(name='Доброжелательность')
+    cat2 = Category(name='Трудолюбие')
+    cat3 = Category(name='Отзывчивость')
+    cat4 = Category(name='Лидерство')
     u1 = User(name='A', surname='A1', login='aa')
     u1.set_password("123")
     u2 = User(name='B', surname='B1', login='bb')
@@ -26,18 +33,36 @@ try:
     u1.company = c
     u2.company = c
     bonus = Bonus(name='Электрокочерга')
+    bonus2 = Bonus(name='Эчпочмак')
+    bonus3 = Bonus(name='Майонез')
+    bonus4 = Bonus(name='Кетчуп')
+    bonus5 = Bonus(name='Грамота')
+
     u2.bonuses.append(bonus)
+    u2.bonuses.append(bonus2)
+    u2.bonuses.append(bonus3)
+    u2.bonuses.append(bonus4)
+    u2.bonuses.append(bonus5)
     u1.bonuses.append(bonus)
+    u1.bonuses.append(bonus2)
+    u1.bonuses.append(bonus3)
+    u1.bonuses.append(bonus4)
+    u1.bonuses.append(bonus5)
     rev = Review(note='123', score=10)
     rev.reviewer = u1
     rev.subject = u2
     rev.company = c
     rev.category = cat
-    update_session(r, c, cat, u1, u2, rev, bonus)
+
+    rev2 = Review(note='Новая оценка', score=2)
+    rev2.reviewer = u2
+    rev2.subject = u1
+    rev2.company = c
+    rev2.category = cat3
+    update_session(r, c, cat, u1, u2, rev, rev2, bonus, cat, cat2, cat3, cat4)
 except Exception as e:
     print(e)
     print("error was occurred")
-
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -65,7 +90,9 @@ def login():
         else:
             login_user(user)
             flash('Logged in successfully', category='success')
-            return redirect(url_for('index'))
+            response = make_response(redirect(url_for('index')))
+            response.set_cookie("key", user.key)
+            return response
     for errors in form.errors.values():
         for error in errors:
             flash(error, category='danger')
@@ -81,7 +108,8 @@ def api_login():
     data = request.json
     if data.get("key") is None:
         return make_response(jsonify('"key" field missing'), 400)
-    return jsonify({"status": "ok" if is_valid_key(data.get("key")) else "bad"})
+    return jsonify(
+        {"status": "ok" if is_valid_key(data.get("key")) else "bad"})
 
 
 @app.route("/api/staff", methods=["GET"])
@@ -95,14 +123,36 @@ def api_staff():
 
     user = User.query.filter_by(key=key).first()
     company_id = user.company_id
-    staff = User.query.filter_by(company_id=company_id).all()
+    staff = User.query.filter_by(company_id=company_id, role_id=3).all()
     staff = [employee.to_public_dict() for employee in staff]
     return make_response(jsonify(staff), 200)
 
 
 @app.route("/index", methods=["GET"])
 def index():
-    return "Покупайте доллары, товарищи!"
+    total_reviews_count = db.session.query(
+        func.count(Review.id).label('number')).filter(
+        (Review.company_id == current_user.company_id)).first().number
+
+    positive_reviews_count = db.session.query(
+        func.count(Review.id).label('number')).filter(
+        (Review.company_id == current_user.company_id) & (
+                    Review.score > 5)).first().number
+
+    negative_reviews_count = total_reviews_count - positive_reviews_count
+
+    mean_reviews_count = db.session.query(
+        func.avg(Review.score).label('average')).filter_by(
+        company_id=current_user.company_id).first().average
+    mean_reviews_count = round(mean_reviews_count, 2)
+
+    return render_template("chief_dashboard.html",
+                           company=current_user.company,
+                           totalReviewsValue=total_reviews_count,
+                           positiveReviewsValue=positive_reviews_count,
+                           negativeReviewsValue=negative_reviews_count,
+                           meanReviewsValue=mean_reviews_count,
+                           percentage=int((mean_reviews_count / 10) * 100))
 
 
 @app.route('/logout')
@@ -120,7 +170,24 @@ def api_reviews():
             return make_response(jsonify('"key" field missing'), 400)
         if not is_valid_key(key):
             return make_response(jsonify('"key" is not valid'), 400)
-        return make_response(jsonify([review.to_public_dict() for review in Review.query.filter_by(subject_id=User.query.filter_by(key=key).first().id).all()]), 200)
+        user = User.query.filter_by(key=key).first()
+        if user.role_id != 3:
+            query = Review.query.filter_by(company_id=user.company_id)
+            page_size = request.args.get("pageSize")
+            page = request.args.get("page")
+            print(page_size, page)
+            if page_size:
+                query = query.limit(int(page_size))
+            if page:
+                query = query.offset((int(page) - 1) * int(page_size))
+            return make_response(jsonify([review.to_public_dict() for review in
+                                          query.all()]), 200)
+
+        return make_response(jsonify([review.to_public_dict() for review in
+                                      Review.query.filter_by(
+                                          subject_id=User.query.filter_by(
+                                              key=key).first().id).all()]),
+                             200)
     elif request.method == "POST":
         data = request.json
         key = data.get("key")
@@ -154,7 +221,8 @@ def api_reviews():
 
 @app.route("/api/reviews/categories", methods=["GET"])
 def api_categories():
-    return make_response(jsonify([category.to_public_dict() for category in Category.query.all()]), 200)
+    return make_response(jsonify(
+        [category.to_public_dict() for category in Category.query.all()]), 200)
 
 
 @app.route("/api/bonuses", methods=["GET", "POST"])
@@ -170,7 +238,7 @@ def api_bonuses():
     user_bonuses = User.query.filter_by(key=user_key).first()
     if user_bonuses is None:
         message = jsonify(message='key missing')
-        return make_response(message, 400)  # TODO: поменять код ошибки
+        return make_response(message, 400)
 
     user_bonuses = [bonus.to_public_dict() for bonus in user_bonuses.bonuses]
 

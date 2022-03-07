@@ -5,7 +5,7 @@ import random
 
 from requests import get, post
 
-host = "http://PaperFoldingSkill.pythonanywhere.com"
+host = "http://192.168.1.3:5000" #"http://PaperFoldingSkill.pythonanywhere.com"
 
 ##### ВНИМАНИЕ! В GET-запросах нужно передавать ключ в параметрах, а не в json!!!!!
 ##### В POST-запросах -- json
@@ -46,9 +46,9 @@ review = {
     "reviews":
     [
         {
-            "category_id": 1,
-            "note": "Отзыв на сотрудника B",
-            "score": random.randint(1, 10)
+            "category_id": 3,
+            "note": "Отзыв на сотрудника B №2",
+            "score": random.randint(1, 5)
         }
     ]
 }
