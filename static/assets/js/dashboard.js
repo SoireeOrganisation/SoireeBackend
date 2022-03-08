@@ -1,9 +1,51 @@
+(function () {
+  'use strict'
+
+  var forms = document.querySelectorAll('.needs-validation')
+
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+
 function getCookie(name)
 {
   let matches = document.cookie.match(new RegExp(
     "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
   ));
   return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function resetStaffSelect()
+{
+    document.getElementById('bonusName').value = '';
+    $('#staffSelect option').prop('selected', false);
+}
+
+function setBonus()
+{
+    $.ajax({url: "/api/bonuses",
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            data:
+                JSON.stringify({
+                    key: getCookie("key"),
+                    name: document.getElementById("bonusName").value,
+                    userId: document.getElementById("staffSelect").value
+                }),
+                success: () => {}
+            });
+    resetStaffSelect();
 }
 
 function updateDataTable(result)

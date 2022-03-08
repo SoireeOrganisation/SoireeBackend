@@ -3,177 +3,285 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Brand</title>
-    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet"
+          href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 </head>
 
 <body id="page-top">
-    <div id="wrapper">
-        <div class="d-flex flex-column" id="content-wrapper">
-            <div id="content">
-                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
-                    <div class="container-fluid">
-                        <h2 class="text-dark" id="panelName">Панель руководителя</h2>
-                    </div>
-                </nav>
+<div id="wrapper">
+    <div class="d-flex flex-column" id="content-wrapper">
+        <div id="content">
+            <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0">Общая статистика</h3>
-                        <div class="d-xl-flex justify-content-xl-end align-items-xl-center"><a class="btn btn-success btn-sm link-light d-none d-sm-inline-block" role="button" href="#" style="margin: 0px;margin-right: 7px;"><i class="far fa-thumbs-up fa-sm text-white-50"></i>&nbsp;Наградить сотрудника</a><a class="btn btn-primary btn-sm d-none d-sm-inline-block" role="button" href="#"><i class="fas fa-download fa-sm text-white-50"></i>&nbsp;Сохранить отчёт</a></div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-start-primary py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-primary fw-bold text-xs mb-1"><span class="text-success">Положительных оценок</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0">
+                    <h2 class="text-dark" id="panelName">Панель
+                        руководителя</h2>
+                </div>
+            </nav>
+            <div class="container-fluid">
+                <div class="d-sm-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark mb-0">Общая статистика</h3>
+                    <div class="d-xl-flex justify-content-xl-end align-items-xl-center">
+                        <a class="btn btn-success btn-sm link-light d-none d-sm-inline-block"
+                           role="button" data-bs-toggle="modal"
+                           data-bs-target="#bonusModal" href="#"
+                           style="margin: 0px;margin-right: 7px;"><i
+                                class="far fa-thumbs-up fa-sm text-white-50"></i>&nbsp;Наградить
+                            сотрудника</a><a
+                            class="btn btn-primary btn-sm d-none d-sm-inline-block"
+                            role="button" href="#"><i
+                            class="fas fa-download fa-sm text-white-50"></i>&nbsp;Сохранить
+                        отчёт</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-start-primary py-2">
+                            <div class="card-body">
+                                <div class="row align-items-center no-gutters">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-primary fw-bold text-xs mb-1">
+                                            <span class="text-success">Положительных оценок</span>
+                                        </div>
+                                        <div class="text-dark fw-bold h5 mb-0">
                                                 <span id="positiveReviewsValue">
                                                     {{ positiveReviewsValue }}
                                                 </span>
-                                            </div>
                                         </div>
-                                        <div class="col-auto"><i class="far fa-smile fa-2x text-gray-300"></i></div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-start-success py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-success fw-bold text-xs mb-1"><span class="text-danger">Негативных ОЦенок</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0">
-                                                <span id="negativeReviewsValue">
-                                                    {{ negativeReviewsValue }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="far fa-frown fa-2x text-gray-300"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-start-info py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-info fw-bold text-xs mb-1"><span class="text-warning">Средняя оценка</span></div>
-                                            <div class="row g-0 align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="text-dark fw-bold h5 mb-0 me-3">
-                                                        <span id="meanReviewsValue">
-                                                            {{ meanReviewsValue }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm">
-                                                        <div class="progress-bar bg-{{'success' if percentage >= 75 else 'warning' if percentage >= 40 else 'danger'}} progress-bar-striped" id="meanValueProgressBar" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ percentage }}%;"><span class="visually-hidden">{{ percentage }}%</span></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-clipboard-list fa-2x text-gray-300"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-xl-3 mb-4">
-                            <div class="card shadow border-start-warning py-2">
-                                <div class="card-body">
-                                    <div class="row align-items-center no-gutters">
-                                        <div class="col me-2">
-                                            <div class="text-uppercase text-warning fw-bold text-xs mb-1"><span class="text-info">всего оценок</span></div>
-                                            <div class="text-dark fw-bold h5 mb-0"><span id="totalReviewsValue">
-                                                {{ totalReviewsValue }}
-                                            </span></div>
-                                        </div>
-                                        <div class="col-auto"><i class="fas fa-comments fa-2x text-gray-300"></i></div>
+                                    <div class="col-auto"><i
+                                            class="far fa-smile fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Оценки</h3>
-                    <div class="card shadow">
-                        <div class="card-header py-3">
-                            <p class="text-primary m-0 fw-bold">Общая информация</p>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-start-success py-2">
+                            <div class="card-body">
+                                <div class="row align-items-center no-gutters">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-success fw-bold text-xs mb-1">
+                                            <span class="text-danger">Негативных ОЦенок</span>
+                                        </div>
+                                        <div class="text-dark fw-bold h5 mb-0">
+                                                <span id="negativeReviewsValue">
+                                                    {{ negativeReviewsValue }}
+                                                </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto"><i
+                                            class="far fa-frown fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 text-nowrap">
-                                    <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label class="form-label">Показать&nbsp;<select class="d-inline-block form-select form-select-sm">
-                                                <option value="10" selected="">10</option>
-                                                <option value="25">25</option>
-                                                <option value="50">50</option>
-                                                <option value="100">100</option>
-                                            </select>&nbsp;</label></div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="text-md-end dataTables_filter" id="dataTable_filter"><label class="form-label"><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Поиск"></label></div>
+                    </div>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-start-info py-2">
+                            <div class="card-body">
+                                <div class="row align-items-center no-gutters">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-info fw-bold text-xs mb-1">
+                                            <span class="text-warning">Средняя оценка</span>
+                                        </div>
+                                        <div class="row g-0 align-items-center">
+                                            <div class="col-auto">
+                                                <div class="text-dark fw-bold h5 mb-0 me-3">
+                                                        <span id="meanReviewsValue">
+                                                            {{ meanReviewsValue }}
+                                                        </span>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="progress progress-sm">
+                                                    <div class="progress-bar bg-{{'success' if percentage >= 75 else 'warning' if percentage >= 40 else 'danger'}} progress-bar-striped"
+                                                         id="meanValueProgressBar"
+                                                         aria-valuenow="{{ percentage }}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100"
+                                                         style="width: {{ percentage }}%;">
+                                                        <span class="visually-hidden">{{ percentage }}%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto"><i
+                                            class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="table-responsive table mt-2" id="dataTable-1" role="grid" aria-describedby="dataTable_info">
-                                <table class="table my-0" id="dataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Рецензент</th>
-                                            <th>Критикуемый</th>
-                                            <th>Категория оценки</th>
-                                            <th>Балл</th>
-                                            <th>Комментарий</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <td><strong>Рецензент</strong></td>
-                                            <td><strong>Критикуемый</strong></td>
-                                            <td><strong>Категория оценки</strong></td>
-                                            <td><strong>Балл</strong></td>
-                                            <td><strong>Комментарий</strong></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 align-self-center">
-                                    <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Показано от 1 до 10 из
-                                        {{ totalReviewsValue }}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
-                                        <ul class="pagination" id="tablePages">
-                                            <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
-                                            <li class="page-item active"><a class="page-link" href="#dataTable">1</a></li>
-                                            <li class="page-item disabled"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
-                                        </ul>
-                                    </nav>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3 mb-4">
+                        <div class="card shadow border-start-warning py-2">
+                            <div class="card-body">
+                                <div class="row align-items-center no-gutters">
+                                    <div class="col me-2">
+                                        <div class="text-uppercase text-warning fw-bold text-xs mb-1">
+                                            <span class="text-info">всего оценок</span>
+                                        </div>
+                                        <div class="text-dark fw-bold h5 mb-0"><span
+                                                id="totalReviewsValue">
+                                                {{ totalReviewsValue }}
+                                            </span></div>
+                                    </div>
+                                    <div class="col-auto"><i
+                                            class="fas fa-comments fa-2x text-gray-300"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <footer class="bg-white sticky-footer">
-                <div class="container my-auto">
-                    <div class="text-center my-auto copyright"></div>
+            <div class="container-fluid">
+                <h3 class="text-dark mb-4">Оценки</h3>
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 fw-bold">Общая
+                            информация</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 text-nowrap">
+                                <div id="dataTable_length"
+                                     class="dataTables_length"
+                                     aria-controls="dataTable"><label
+                                        class="form-label">Показать&nbsp;<select
+                                        class="d-inline-block form-select form-select-sm">
+                                    <option value="10" selected="">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select>&nbsp;</label></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-md-end dataTables_filter"
+                                     id="dataTable_filter"><label
+                                        class="form-label"><input type="search"
+                                                                  class="form-control form-control-sm"
+                                                                  aria-controls="dataTable"
+                                                                  placeholder="Поиск"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive table mt-2"
+                             id="dataTable-1" role="grid"
+                             aria-describedby="dataTable_info">
+                            <table class="table my-0" id="dataTable">
+                                <thead>
+                                <tr>
+                                    <th>Рецензент</th>
+                                    <th>Критикуемый</th>
+                                    <th>Категория оценки</th>
+                                    <th>Балл</th>
+                                    <th>Комментарий</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <td><strong>Рецензент</strong></td>
+                                    <td><strong>Критикуемый</strong></td>
+                                    <td><strong>Категория оценки</strong></td>
+                                    <td><strong>Балл</strong></td>
+                                    <td><strong>Комментарий</strong></td>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 align-self-center">
+                                <p id="dataTable_info" class="dataTables_info"
+                                   role="status" aria-live="polite">Показано от
+                                    1 до 10 из
+                                    {{ totalReviewsValue }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                                    <ul class="pagination" id="tablePages">
+                                        <li class="page-item disabled"><a
+                                                class="page-link" href="#"
+                                                aria-label="Previous"><span
+                                                aria-hidden="true">«</span></a>
+                                        </li>
+                                        <li class="page-item active"><a
+                                                class="page-link"
+                                                href="#dataTable">1</a></li>
+                                        <li class="page-item disabled"><a
+                                                class="page-link" href="#"
+                                                aria-label="Next"><span
+                                                aria-hidden="true">»</span></a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+            </div>
+        </div>
+        <footer class="bg-white sticky-footer">
+            <div class="container my-auto">
+                <div class="text-center my-auto copyright"></div>
+            </div>
+        </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/assets/js/theme.js"></script>
-    <script src="/static/assets/js/jquery.js"></script>
-    <script src="/static/assets/js/dashboard.js"></script>
+    <a class="border rounded d-inline scroll-to-top" href="#page-top"><i
+            class="fas fa-angle-up"></i></a>
+</div>
+<div class="modal fade" id="bonusModal" data-bs-backdrop="static"
+     data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Назначить
+                    вознаграждение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row needs-validation" novalidate>
+                    <div class="container">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control"
+                                   placeholder="Название вознаграждения"
+                                   aria-label="Название вознаграждения"
+                                   aria-describedby="button-addon2" id="bonusName" required>
+                        </div>
+                        <select class="form-select"
+                                aria-label="Выберите сотрудника" id="staffSelect" required>
+                            <option value="" id="selectPlaceholderElement" hidden>Выберите сотрудника</option>
+                            {% for employee in staff %}
+                              <option value="{{ employee.id }}">{{ employee.name }} {{ employee.surname }} {{ employee.patronymic or "" }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal" onclick="resetStaffSelect();">Отменить
+                </button>
+                <button type="submit" class="btn btn-success" data-bs-dismiss="modal" style="color: white;" onclick="setBonus();">Наградить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/js/theme.js"></script>
+<script src="/static/assets/js/jquery.js"></script>
+<script src="/static/assets/js/dashboard.js"></script>
 </body>
 
 </html>
