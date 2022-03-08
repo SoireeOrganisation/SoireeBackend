@@ -191,13 +191,16 @@ def index():
         company_id=current_user.company_id).first().average
     mean_reviews_count = round(mean_reviews_count, 2)
 
+    staff = User.query.filter((User.role_id == 3)).all()
+
     return render_template("chief_dashboard.html",
                            company=current_user.company,
                            totalReviewsValue=total_reviews_count,
                            positiveReviewsValue=positive_reviews_count,
                            negativeReviewsValue=negative_reviews_count,
                            meanReviewsValue=mean_reviews_count,
-                           percentage=int((mean_reviews_count / 10) * 100))
+                           percentage=int((mean_reviews_count / 10) * 100),
+                           staff=staff)
 
 
 @app.route('/logout')
@@ -223,7 +226,7 @@ def api_reviews():
             print(page_size, page)
             if page_size:
                 query = query.limit(int(page_size))
-            if page:
+            if page and page_size:
                 query = query.offset((int(page) - 1) * int(page_size))
             return make_response(jsonify([review.to_public_dict() for review in
                                           query.all()]), 200)
@@ -277,6 +280,21 @@ def api_bonuses():
     else:
         data = request.json
         user_key = data.get("key")
+        if not is_valid_key(user_key):
+            message = jsonify(message='invalid key')
+            return make_response(message, 400)
+        name = data.get("name")
+        user_id = int(data.get("userId", "0"))
+        if any(not x for x in [name, user_id]):
+            message = jsonify(message='invalid data')
+            return make_response(message, 400)
+        new_bonus = Bonus(name=name)
+        user = User.query.filter_by(id=user_id).first()
+        if user is None:
+            message = jsonify(message='invalid userId')
+            return make_response(message, 400)
+        user.bonuses.append(new_bonus)
+        update_session(user, new_bonus)
     if user_key is None:
         message = jsonify(message='key missing')
         return make_response(message, 400)

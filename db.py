@@ -35,7 +35,8 @@ class User(UserMixin, db.Model):
 
     @password.setter
     def password(self, new_password):
-        self.set_password(new_password)
+        if new_password:
+            self.set_password(new_password)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

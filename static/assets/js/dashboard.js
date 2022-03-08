@@ -1,9 +1,58 @@
+async function validateFormAndSend()
+{
+    var form = document.getElementById("bonusForm");
+
+    if (form.checkValidity())
+    {
+        $('#bonusModal').modal('hide');
+        await new Promise(r => setTimeout(r, 300));
+        setBonus();
+        if (form.classList.contains("was-validated"))
+        {
+            form.classList.remove("was-validated");
+        }
+        return;
+    }
+
+     form.classList.add("was-validated");
+}
+
+$(document).on('submit', '[data-validator]', function () {
+    new Validator($(this));
+});
+
+
+
 function getCookie(name)
 {
   let matches = document.cookie.match(new RegExp(
     "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
   ));
   return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function resetStaffSelect()
+{
+    document.getElementById('bonusName').value = '';
+    $('#staffSelect option').prop('selected', false);
+}
+
+function setBonus()
+{
+    $.ajax({url: "/api/bonuses",
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            data:
+                JSON.stringify({
+                    key: getCookie("key"),
+                    name: document.getElementById("bonusName").value,
+                    userId: document.getElementById("staffSelect").value
+                }),
+                success: () => {}
+            });
+    resetStaffSelect();
 }
 
 function updateDataTable(result)
@@ -27,10 +76,18 @@ function updateDataTable(result)
 function clearDataTableRows(startIndex, endIndex)
 {
     var dataTable = document.getElementById("dataTable");
-    for (i = startIndex; i <= endIndex; i++)
-    {
-        dataTable.deleteRow(i);
+    while(dataTable.rows.length > 2) {
+      dataTable.deleteRow(1);
     }
+}
+
+function updateReviews()
+{
+    let startPage = 1;
+    let startPageSize = document.getElementById("dataTableSelect").value;
+    let el = document.getElementById("endIndex");
+    el.innerText = startPageSize;
+    getReviews(startPage, startPageSize);
 }
 
 function getReviews(page, pageSize)
@@ -65,15 +122,14 @@ function addRowToDataTable(reviewerName, subjectName, categoryName, score, note)
 }
 
 const host = window.location.host;
-let startPage = 1;
-let startPageSize = 5;
+
 
 if (!getCookie("key"))
 {
     window.location.replace(`login`);
 }
-else
-{
-    getReviews(startPage, startPageSize);
-}
+
+document.addEventListener("DOMContentLoaded", function() {
+  updateReviews();
+});
 
