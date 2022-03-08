@@ -248,10 +248,10 @@
                         aria-label="Закрыть"></button>
             </div>
             <div class="modal-body">
-                <form class="row needs-validation" novalidate>
+                <form class="row needs-validation" id="bonusForm" novalidate>
                     <div class="container">
-                        <div class="input-group mb-3">
-                            <input type="text" class="form-control"
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-3"
                                    placeholder="Название вознаграждения"
                                    aria-label="Название вознаграждения"
                                    aria-describedby="button-addon2" id="bonusName" required>
@@ -271,7 +271,7 @@
                 <button type="button" class="btn btn-secondary"
                         data-bs-dismiss="modal" onclick="resetStaffSelect();">Отменить
                 </button>
-                <button type="submit" class="btn btn-success" data-bs-dismiss="modal" style="color: white;" onclick="setBonus();">Наградить
+                <button type="submit" class="btn btn-success" style="color: white;" onclick="validateFormAndSend();">Наградить
                 </button>
             </div>
         </div>

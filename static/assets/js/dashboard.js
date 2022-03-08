@@ -1,20 +1,27 @@
-(function () {
-  'use strict'
+async function validateFormAndSend()
+{
+    var form = document.getElementById("bonusForm");
 
-  var forms = document.querySelectorAll('.needs-validation')
-
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
+    if (form.checkValidity())
+    {
+        $('#bonusModal').modal('hide');
+        await new Promise(r => setTimeout(r, 300));
+        setBonus();
+        if (form.classList.contains("was-validated"))
+        {
+            form.classList.remove("was-validated");
         }
+        return;
+    }
 
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+     form.classList.add("was-validated");
+}
+
+$(document).on('submit', '[data-validator]', function () {
+    new Validator($(this));
+});
+
+
 
 function getCookie(name)
 {
