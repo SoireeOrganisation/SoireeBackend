@@ -226,7 +226,7 @@ def api_reviews():
             print(page_size, page)
             if page_size:
                 query = query.limit(int(page_size))
-            if page:
+            if page and page_size:
                 query = query.offset((int(page) - 1) * int(page_size))
             return make_response(jsonify([review.to_public_dict() for review in
                                           query.all()]), 200)

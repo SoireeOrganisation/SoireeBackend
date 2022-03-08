@@ -12,6 +12,9 @@
           href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet"
           href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <script src="/static/assets/js/jquery.js"></script>
+    <script src="/static/assets/js/dashboard.js"></script>
+
 </head>
 
 <body id="page-top">
@@ -155,7 +158,7 @@
                                      class="dataTables_length"
                                      aria-controls="dataTable"><label
                                         class="form-label">Показать&nbsp;<select
-                                        class="d-inline-block form-select form-select-sm">
+                                        class="d-inline-block form-select form-select-sm"  id="dataTableSelect" onchange="updateReviews();">
                                     <option value="10" selected="">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -200,7 +203,7 @@
                             <div class="col-md-6 align-self-center">
                                 <p id="dataTable_info" class="dataTables_info"
                                    role="status" aria-live="polite">Показано от
-                                    1 до 10 из
+                                    <span id="startIndex">1</span> до <span id="endIndex">10</span> из
                                     {{ totalReviewsValue }}</p>
                             </div>
                             <div class="col-md-6">
@@ -280,8 +283,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/static/assets/js/theme.js"></script>
-<script src="/static/assets/js/jquery.js"></script>
-<script src="/static/assets/js/dashboard.js"></script>
 </body>
 
 </html>

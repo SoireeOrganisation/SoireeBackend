@@ -76,10 +76,18 @@ function updateDataTable(result)
 function clearDataTableRows(startIndex, endIndex)
 {
     var dataTable = document.getElementById("dataTable");
-    for (i = startIndex; i <= endIndex; i++)
-    {
-        dataTable.deleteRow(i);
+    while(dataTable.rows.length > 2) {
+      dataTable.deleteRow(1);
     }
+}
+
+function updateReviews()
+{
+    let startPage = 1;
+    let startPageSize = document.getElementById("dataTableSelect").value;
+    let el = document.getElementById("endIndex");
+    el.innerText = startPageSize;
+    getReviews(startPage, startPageSize);
 }
 
 function getReviews(page, pageSize)
@@ -114,15 +122,14 @@ function addRowToDataTable(reviewerName, subjectName, categoryName, score, note)
 }
 
 const host = window.location.host;
-let startPage = 1;
-let startPageSize = 5;
+
 
 if (!getCookie("key"))
 {
     window.location.replace(`login`);
 }
-else
-{
-    getReviews(startPage, startPageSize);
-}
+
+document.addEventListener("DOMContentLoaded", function() {
+  updateReviews();
+});
 
