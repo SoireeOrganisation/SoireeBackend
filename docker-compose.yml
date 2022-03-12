@@ -3,12 +3,20 @@ version: '3.8'
 services:
   web:
     build: .
+    image: bopobywek/web:latest
     env_file:
       - .env.dev
-    ports:
-      - 5000:5000
+    expose:
+      - 5000
     depends_on:
       - db
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - web
   db:
     image: postgres:13-alpine
     environment:

@@ -5,7 +5,7 @@ import random
 
 from requests import get, post
 
-host = "http://192.168.1.3:5000" #"http://PaperFoldingSkill.pythonanywhere.com"
+host = "http://localhost:1337" #"http://PaperFoldingSkill.pythonanywhere.com"
 
 ##### ВНИМАНИЕ! В GET-запросах нужно передавать ключ в параметрах, а не в json!!!!!
 ##### В POST-запросах -- json
