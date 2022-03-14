@@ -1,108 +1,49 @@
 import os
 
-from flask import Flask, request, jsonify, make_response, flash, \
-    render_template, redirect, url_for, session
+from flask import request, jsonify, make_response, flash, \
+    render_template, redirect, url_for
 from flask_login import LoginManager, login_user, \
     current_user, logout_user, login_required
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
 from sqlalchemy.sql.functions import func
-from wtforms import PasswordField
+from apiflask import APIFlask
 
-from .db import db, Review, Category, User, Role, Company, Bonus, update_session
+from .models import db, Review, Category, User, Company, Bonus,\
+    update_session, init_db
 from .config import Config
 from .login_form import LoginForm
-
-from apiflask import APIFlask
+from .admin_links import LoginMenuLink, LogoutMenuLink
+from .admin_view_models import ReviewModelView, UserModelView,\
+    CompanyModelView, CategoryModelView
+from .mail_helpers import mail
 
 app = APIFlask(__name__, spec_path='/spec')
 app.config['SPEC_FORMAT'] = 'yaml'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///soiree.db")
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'implicit_returning': False}
 app.config.from_object(Config())
 db.app = app
 db.init_app(app)
+mail.app = app
+mail.init_app(app)
+
 try:
-    db.create_all()
-    r = Role(name='Администатор')
-    r1 = Role(name='Руководитель')
-    r2 = Role(name='Сотрудник')
-    c = Company(name='Рога и копыта')
-    cat = Category(name='Доброжелательность')
-    cat2 = Category(name='Трудолюбие')
-    cat3 = Category(name='Отзывчивость')
-    cat4 = Category(name='Лидерство')
-    u1 = User(name='A', surname='A1', login='aa')
-    u1.set_password("123")
-    u2 = User(name='B', surname='B1', login='bb')
-    u2.set_password("123")
-    u3 = User(name='admin', surname='', login='admin')
-    u3.set_password('admin')
-    u3.role = r
-    u1.company = c
-    u2.company = c
-    bonus = Bonus(name='Электрокочерга')
-    bonus2 = Bonus(name='Эчпочмак')
-    bonus3 = Bonus(name='Майонез')
-    bonus4 = Bonus(name='Кетчуп')
-    bonus5 = Bonus(name='Грамота')
-
-    u2.bonuses.append(bonus)
-    u2.bonuses.append(bonus2)
-    u2.bonuses.append(bonus3)
-    u2.bonuses.append(bonus4)
-    u2.bonuses.append(bonus5)
-    u1.bonuses.append(bonus)
-    u1.bonuses.append(bonus2)
-    u1.bonuses.append(bonus3)
-    u1.bonuses.append(bonus4)
-    u1.bonuses.append(bonus5)
-    rev = Review(note='123', score=10)
-    rev.reviewer = u1
-    rev.subject = u2
-    rev.company = c
-    rev.category = cat
-
-    rev2 = Review(note='Новая оценка', score=2)
-    rev2.reviewer = u2
-    rev2.subject = u1
-    rev2.company = c
-    rev2.category = cat3
-    update_session(r, r1, r2, c, cat, u1, u2, u3, rev, rev2, bonus, cat, cat2, cat3, cat4)
+    init_db()
 except Exception as e:
-    print(e)
+    print(e.__traceback__)
     print("error was occurred")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
-class AdminModelView(ModelView):
-    column_exclude_list = ['password_hash', 'key']
-    form_extra_fields = {
-        'password': PasswordField('Password')
-    }
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.role_id == 1
-
-
-class CompanyModelView(ModelView):
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.role_id == 1
-
-
-class CategoryModelView(ModelView):
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.role_id == 1
-
-
 admin = Admin(app)
-admin.add_view(AdminModelView(User, db.session))
+admin.add_view(UserModelView(User, db.session))
 admin.add_view(CompanyModelView(Company, db.session))
 admin.add_view(CategoryModelView(Category, db.session))
+admin.add_view(ReviewModelView(Review, db.session))
+admin.add_link(LogoutMenuLink(name='Logout', category='', url="/logout"))
+admin.add_link(LoginMenuLink(name='Login', category='', url="/login"))
 
 
 @login_manager.user_loader
@@ -113,7 +54,10 @@ def load_user(user_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        route = '/admin' if current_user.role_id == 1 else '/index'
+        response = make_response(redirect(route))
+        response.set_cookie("key", current_user.key)
+        return response
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(login=form.username.data).first()
@@ -160,7 +104,9 @@ def api_staff():
 
     user = User.query.filter_by(key=key).first()
     company_id = user.company_id
-    staff = User.query.filter_by(company_id=company_id, role_id=3).all()
+    staff = User.query.filter((User.company_id == company_id)
+                              & (User.id != user.id)
+                              & (User.role_id == 3)).all()
     staff = [employee.to_public_dict() for employee in staff]
     return make_response(jsonify(staff), 200)
 
@@ -172,6 +118,7 @@ def forbidden():
 
 @app.route("/", methods=["GET"])
 @app.route("/index", methods=["GET"])
+@app.route("/dashboard", methods=["GET"])
 def index():
     if not current_user.is_authenticated:
         return redirect('login')
@@ -191,7 +138,8 @@ def index():
     mean_reviews_count = db.session.query(
         func.avg(Review.score).label('average')).filter_by(
         company_id=current_user.company_id).first().average
-    mean_reviews_count = round(mean_reviews_count, 2)
+    mean_reviews_count = round(mean_reviews_count, 2) \
+        if mean_reviews_count is not None else 0
 
     staff = User.query.filter((User.role_id == 3)).all()
 
@@ -256,6 +204,11 @@ def api_reviews():
                 return make_response(jsonify('There is empty fields'), 400)
             reviewer = User.query.filter_by(key=key).first()
             subject = User.query.filter_by(id=subject_id).first()
+            if reviewer.id == subject.id:
+                return make_response(
+                    jsonify('reviewer and subject'
+                            ' should not be the same person'),
+                    400)
             category = Category.query.filter_by(id=category_id).first()
             company = Company.query.filter_by(id=reviewer.company_id).first()
             review = Review(note=note, score=score)

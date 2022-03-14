@@ -6,3 +6,4 @@ COPY main.py requirements.txt ./
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 ENV FLASK_APP app.py
+ENV STATIC_PATH /app/app/static

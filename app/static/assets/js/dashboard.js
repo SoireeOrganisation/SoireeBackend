@@ -64,11 +64,11 @@ function updateDataTable(result)
         for (i = 0; i < result.length; i++)
         {
             let data = result[i];
-            addRowToDataTable(data["reviewer"]["name"],
+            addRowToDataTable(data["reviewer"]["name"] + data["reviewer"]["surname"] + data["reviewer"]["patronymic"],
               data["subject"]["name"],
-              data["category"]["name"],
+              data["category"]["name"] + data["category"]["surname"] + data["category"]["patronymic"],
               data["score"],
-              data["note"]);
+              data["note"] || "-");
         }
     }
 }

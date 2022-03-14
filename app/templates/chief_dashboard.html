@@ -25,6 +25,16 @@
                 <div class="container-fluid">
                     <h2 class="text-dark" id="panelName">Панель
                         руководителя</h2>
+                    <a class="btn" href="/logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                             height="16" fill="currentColor"
+                             class="bi bi-box-arrow-right" viewBox="0 0 16 16" style="width: 200%; height: auto;">
+                            <path fill-rule="evenodd"
+                                  d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                            <path fill-rule="evenodd"
+                                  d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                        </svg>
+                    </a>
                 </div>
             </nav>
             <div class="container-fluid">
@@ -158,7 +168,9 @@
                                      class="dataTables_length"
                                      aria-controls="dataTable"><label
                                         class="form-label">Показать&nbsp;<select
-                                        class="d-inline-block form-select form-select-sm"  id="dataTableSelect" onchange="updateReviews();">
+                                        class="d-inline-block form-select form-select-sm"
+                                        id="dataTableSelect"
+                                        onchange="updateReviews();">
                                     <option value="10" selected="">10</option>
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -203,7 +215,8 @@
                             <div class="col-md-6 align-self-center">
                                 <p id="dataTable_info" class="dataTables_info"
                                    role="status" aria-live="polite">Показано от
-                                    <span id="startIndex">1</span> до <span id="endIndex">10</span> из
+                                    <span id="startIndex">1</span> до <span
+                                            id="endIndex">10</span> из
                                     {{ totalReviewsValue }}</p>
                             </div>
                             <div class="col-md-6">
@@ -257,13 +270,20 @@
                             <input type="text" class="form-control mb-3"
                                    placeholder="Название вознаграждения"
                                    aria-label="Название вознаграждения"
-                                   aria-describedby="button-addon2" id="bonusName" required>
+                                   aria-describedby="button-addon2"
+                                   id="bonusName" required>
                         </div>
                         <select class="form-select"
-                                aria-label="Выберите сотрудника" id="staffSelect" required>
-                            <option value="" id="selectPlaceholderElement" hidden>Выберите сотрудника</option>
+                                aria-label="Выберите сотрудника"
+                                id="staffSelect" required>
+                            <option value="" id="selectPlaceholderElement"
+                                    hidden>Выберите сотрудника
+                            </option>
                             {% for employee in staff %}
-                              <option value="{{ employee.id }}">{{ employee.name }} {{ employee.surname }} {{ employee.patronymic or "" }}</option>
+                            <option value="{{ employee.id }}">{{ employee.name
+                                }} {{ employee.surname }} {{
+                                employee.patronymic or "" }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -272,9 +292,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal" onclick="resetStaffSelect();">Отменить
+                        data-bs-dismiss="modal" onclick="resetStaffSelect();">
+                    Отменить
                 </button>
-                <button type="submit" class="btn btn-success" style="color: white;" onclick="validateFormAndSend();">Наградить
+                <button type="submit" class="btn btn-success"
+                        style="color: white;" onclick="validateFormAndSend();">
+                    Наградить
                 </button>
             </div>
         </div>

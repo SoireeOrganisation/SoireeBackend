@@ -5,7 +5,7 @@ import random
 
 from requests import get, post
 
-host = "http://34.121.158.212" #"http://PaperFoldingSkill.pythonanywhere.com"
+host = "http://localhost:5000"
 
 ##### ВНИМАНИЕ! В GET-запросах нужно передавать ключ в параметрах, а не в json!!!!!
 ##### В POST-запросах -- json
@@ -40,9 +40,13 @@ print()
 
 #### Загрузка отзыва
 
+login = "aa"
+password = "123"
+key = md5((password + login).encode("utf-8")).hexdigest()
+
 review = {
     "key": key,  # тот, кто оставил отзыв
-    "subject_id": 2,  # тот, на кого оставили отзыв
+    "subject_id": 3,  # тот, на кого оставили отзыв
     "reviews":
     [
         {
@@ -55,12 +59,25 @@ review = {
 result = post(f"{host}/api/reviews", json=review)
 print(f"{result.request.method}: {result.request.url}")
 print(result.status_code)
+print(result.content)
 print()
 
 #### Получение отзывов на сотрудника
 
 login = "bb"
 password = "123"
+key = md5((password + login).encode("utf-8")).hexdigest()
+
+result = get(f"{host}/api/reviews", params={"key": key})
+print(f"{result.request.method}: {result.request.url}")
+print(result.status_code)
+pprint(loads(result.content))
+print()
+
+print("jsmith here")
+
+login = "jsmith"
+password = "123123"
 key = md5((password + login).encode("utf-8")).hexdigest()
 
 result = get(f"{host}/api/reviews", params={"key": key})
