@@ -1,4 +1,5 @@
 import os
+import logging
 
 from flask import request, jsonify, make_response, flash, \
     render_template, redirect, url_for
@@ -174,10 +175,12 @@ def api_reviews():
             page_size = request.args.get("pageSize")
             page = request.args.get("page")
             print(page_size, page)
+            print(query.all())
             if page_size:
                 query = query.limit(int(page_size))
             if page and page_size:
                 query = query.offset((int(page) - 1) * int(page_size))
+            print(query.all())
             return make_response(jsonify([review.to_public_dict() for review in
                                           query.all()]), 200)
 

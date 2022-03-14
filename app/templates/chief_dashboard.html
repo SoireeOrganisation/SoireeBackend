@@ -5,16 +5,102 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Dashboard - Brand</title>
+    <title>Панель руководителя</title>
     <link rel="stylesheet"
           href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet"
           href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <style>
+        /*!
+ * TableExport.js v5.2.0 (https://www.travismclarke.com)
+ *
+ * Copyright (c) 2018 - Travis Clarke - https://www.travismclarke.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+
+ * http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+/*-----------------------------------/
+/* BUTTON CUSTOM CLASSES
+/*----------------------------------*/
+
+.button-default,
+.button-default:hover,
+.button-default:focus,
+.button-default:active {
+  text-decoration: none;
+}
+
+.button-default {
+  font: bold 12px sans-serif;
+  color: #222222;
+  cursor: pointer;
+  padding: 5px;
+  margin: 5px;
+}
+
+.button-default.xlsx:before,
+.button-default.xls:before,
+.button-default.csv:before,
+.button-default.txt:before {
+  content: none;
+}
+
+.xlsx,
+.xls,
+.csv,
+.txt {
+  margin: 4px 0;
+}
+
+.xlsx:before,
+.xls:before,
+.csv:before,
+.txt:before {
+  margin-right: 10px;
+  padding: 11px 15px 12px;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.xlsx:before {
+  content: "";
+  background: darkgreen url(../img/xlsx.svg) no-repeat center;
+}
+
+.xls:before {
+  content: "";
+  background: green url(../img/xls.svg) no-repeat center;
+}
+
+.csv:before {
+  content: "";
+  background: blue url(../img/csv.svg) no-repeat center;
+}
+
+.txt:before {
+  content: "";
+  background: purple url(../img/txt.svg) no-repeat center;
+}
+
+
+    </style>
     <script src="/static/assets/js/jquery.js"></script>
     <script src="/static/assets/js/dashboard.js"></script>
-
+    <script src="/static/assets/js/FileSaver.js"></script>
+    <script src="/static/assets/js/xlsx.core.js"></script>
+    <script src="/static/assets/js/tableexport.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -28,7 +114,8 @@
                     <a class="btn" href="/logout">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16"
                              height="16" fill="currentColor"
-                             class="bi bi-box-arrow-right" viewBox="0 0 16 16" style="width: 200%; height: auto;">
+                             class="bi bi-box-arrow-right" viewBox="0 0 16 16"
+                             style="width: 200%; height: auto;">
                             <path fill-rule="evenodd"
                                   d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
                             <path fill-rule="evenodd"
@@ -48,7 +135,7 @@
                                 class="far fa-thumbs-up fa-sm text-white-50"></i>&nbsp;Наградить
                             сотрудника</a><a
                             class="btn btn-primary btn-sm d-none d-sm-inline-block"
-                            role="button" href="#"><i
+                            role="button" href="#table-footer" onclick="d()"><i
                             class="fas fa-download fa-sm text-white-50"></i>&nbsp;Сохранить
                         отчёт</a></div>
                 </div>
@@ -243,7 +330,7 @@
                 </div>
             </div>
         </div>
-        <footer class="bg-white sticky-footer">
+        <footer class="bg-white sticky-footer" id="table-footer">
             <div class="container my-auto">
                 <div class="text-center my-auto copyright"></div>
             </div>
@@ -298,6 +385,29 @@
                 <button type="submit" class="btn btn-success"
                         style="color: white;" onclick="validateFormAndSend();">
                     Наградить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="downloadModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Выберите формат</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <button download="report.csv" type="button"
+                        class="btn btn-primary"
+                        onclick="return ExcellentExport.csv(this, 'dataTable');">
+                    CSV
+                </button>
+                <button download="report.xls" type="button"
+                        class="btn btn-primary"
+                        onclick="return ExcellentExport.excel(this, 'dataTable', 'Отзывы сотрудников');">
+                    XLS
                 </button>
             </div>
         </div>

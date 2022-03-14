@@ -181,4 +181,5 @@ def update_session(*args):
     try:
         db.session.commit()
     except DatabaseError as _:
+        print("db error, rollback")
         db.session.rollback()
