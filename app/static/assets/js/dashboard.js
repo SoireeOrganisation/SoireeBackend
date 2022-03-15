@@ -156,8 +156,8 @@ dataTable.removeChild(c);
 document.getElementById("dataTable-1").appendChild(c);
 document.getElementsByClassName("xlsx")[0].style = "margin-right: 1%;"
 document.getElementsByClassName("xlsx")[0].classList.remove("btn-default")
-document.getElementsByClassName("xlsx")[0].classList.add("btn-outline-dark")
+document.getElementsByClassName("xlsx")[0].classList.add("btn-outline-secondary")
 document.getElementsByClassName("csv")[0].classList.remove("btn-default")
-document.getElementsByClassName("csv")[0].classList.add("btn-outline-dark")
+document.getElementsByClassName("csv")[0].classList.add("btn-outline-secondary")
 }
 
