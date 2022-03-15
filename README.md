@@ -3,6 +3,9 @@
 ## Лендинг проекта
 http://soiree-app.tilda.ws
 
+## Сайт ресурса
+http://20.113.130.40
+
 ## Инстркуция по сборке и запуску
 ```shell
 sudo docker pull bopobywek/soiree:latest
